@@ -1,5 +1,5 @@
 require("dotenv").config();
-// require("@nomiclabs/hardhat-etherscan");
+require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 // require("hardhat-gas-reporter");
 // require("solidity-coverage");
@@ -22,13 +22,13 @@ module.exports = {
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     mumbai: {
-      url: process.env.MUMBAI_URL || "",
+      url:"https://rpc-mumbai.matic.today",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       //chainId: 80001,
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.MUMBAISCAN_API_KEY,
   },
 };
