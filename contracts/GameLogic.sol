@@ -5,9 +5,17 @@ pragma solidity ^0.8.14;
 import "./ConfigureLogic.sol";
 
 contract GameLogic is ConfigureLogic {
-  uint public auctionCount = 0;
+  uint public auctionCount;
 
-  constructor (IERC20 _currency,ohMyMinter _tokenNFT) ConfigureLogic(_currency, _tokenNFT) {}
+  struct profit {
+    uint256 profits;
+    bool isprofit;
+  }
+  uint totalGarbage;
+
+  constructor (IERC20 _currency,ohMyMinter _tokenNFT) ConfigureLogic(_currency, _tokenNFT) {
+    auctionCount = _tokenNFT.totalSupply();
+  }
 
   function setAndStart(uint _initialPrice) public {
     setInitialPrice(_initialPrice);
@@ -28,9 +36,14 @@ contract GameLogic is ConfigureLogic {
 
   function redeemAndBurn(uint _id) public returns(bool){
     require(token.ownerOf(_id) == msg.sender, "You are not the owner of this token");
+    require(checkSell(_id), "You can't sell this token");    
+    uint toPay = priceOfBuy[_id+1];  //+1 because need the next sell price
+
+    priceOfSell[_id] = toPay;
     token.transferFrom(msg.sender, address(this), _id);
-    uint toPay = priceOfBuy[auctionCount+1];  //guarda con entrar en posiciones no existentes!!
     currency.transfer(msg.sender, toPay);
+    _gargbageCollect(getDifference(_id));
+
     return true;
   }
 
@@ -47,6 +60,36 @@ contract GameLogic is ConfigureLogic {
     uint currentPrice = price - (discountPerSecond * difTime);
 
     return currentPrice;
+  }  
+
+  function getDifference(uint _id)public view returns(profit memory){
+    uint buyPrice = priceOfBuy[_id];
+    uint sell = priceOfSell[_id];
+    profit memory profitResults;
+    if(buyPrice > sell){
+      profitResults.profits = buyPrice - sell;
+      profitResults.isprofit = false;
+    }else{
+      profitResults.profits = sell - buyPrice;
+      profitResults.isprofit = true;
+    }
+    return profitResults;
+  }
+
+  function checkSell(uint _id)public view returns(bool){
+    return priceOfBuy[_id+1]>0;
+  }
+
+  function cleanGarbage(uint _ammount, address _owner)public onlyOwner{
+    require(_ammount > 0, "You must send a positive amount");
+    require(_ammount <= totalGarbage, "You don't have enough garbage");
+    currency.transfer(_owner, _ammount);
+    totalGarbage -= _ammount;
   }
   
+  function _gargbageCollect(profit memory nonProfit) internal {
+    if(!nonProfit.isprofit) {
+      totalGarbage += nonProfit.profits;      
+    }
+  }
 }

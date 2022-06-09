@@ -1,3 +1,31 @@
+# Game  0.1.0
+ohMyMinter is a simple nft-based game, where user can buy a nft. 
+ The price of nft is movil depend of: 
+> base price (initial price of first auction)
+> auction number
+> time (difference between current time and start time )
+> minimal price
+
+yes, fine, but why i buy this nft?
+ you can redeem you nft, for the price of buy of next nft. Can be more of you buy(much more) or much less(10-25% of you price).
+ you do not depend on the previous purchase, only depends of the next buy.
+
+And that's all for now.
+
+
+
+Road Map and ideas:
+# Game 0.2.0 
+> Garbage token collector, this contract can be convert in a rabit hole where part of money never used.
+For this implement garbage token collector, this sistem will redirect (money that can never be repaid) to a pool, where the nfts owner can change your nft
+for weight(weight based in bought price of nft) and get some of garbage cake. Yes, garbage = coin used in nft mint. it no personal, you can use the erc of your choice.
+
+# Need a guide? contact with me in twitter
+ @Patoverde_
+
+
+
+
 # Advanced Sample Hardhat Project
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
