@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract ohMyMinter is ERC721, ERC721Enumerable, Ownable {
+contract ohMyMinter is ERC721, ERC721Enumerable, ERC721Burnable, Ownable {
     using Counters for Counters.Counter;    
     Counters.Counter private _tokenIdCounter;
 
@@ -21,8 +21,8 @@ contract ohMyMinter is ERC721, ERC721Enumerable, Ownable {
     constructor() ERC721("ohMyMinter", "OMM") {}
 
     function safeMint(address to) public onlyMinter {
-      uint256 tokenId = _tokenIdCounter.current();
       _tokenIdCounter.increment();
+      uint256 tokenId = _tokenIdCounter.current();
       _safeMint(to, tokenId);
     }
 
