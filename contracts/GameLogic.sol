@@ -7,12 +7,11 @@ import "./ConfigureLogic.sol";
 contract GameLogic is ConfigureLogic {
   uint public auctionCount = 0;
 
-  constructor (IERC20 _currency, IERC721 _token) ConfigureLogic(_currency, _token) {}
+  constructor (IERC20 _currency,ohMyMinter _tokenNFT) ConfigureLogic(_currency, _tokenNFT) {}
 
-  function setAndStart(uint _initialPrice, uint _auctionInitialDuration) public {
+  function setAndStart(uint _initialPrice) public {
     setInitialPrice(_initialPrice);
-    setBasePrice(_initialPrice);
-    setAuctionInitialDuration(_auctionInitialDuration);
+    setBasePrice(_initialPrice);    
     startAuction();
   }
 
@@ -24,7 +23,7 @@ contract GameLogic is ConfigureLogic {
     priceOfBuy[auctionCount] = currentPrice;
     setInitialPrice(currentPrice);  
     startAuction();
-    // token.mint(msg.sender);
+    token.safeMint(msg.sender);
   }
 
   function redeemAndBurn(uint _id) public returns(bool){
@@ -35,14 +34,18 @@ contract GameLogic is ConfigureLogic {
     return true;
   }
 
-  //
   function getCurrentPrice()public view returns(uint) {
-    uint price = (initialPrice * 2) + (basePrice * auctionCount);     
     uint finalTime = auctionMaxDuration + auctionsStartDate;
-    uint difTime = block.timestamp - auctionsStartDate;
+    if(block.timestamp >= finalTime) {
+      return minimalPrice;
+    }
 
+    uint price = (initialPrice * 2) + (basePrice * auctionCount);     
+    uint difTime = block.timestamp - auctionsStartDate;
+    
     uint discountPerSecond = (price - minimalPrice) / (finalTime - auctionsStartDate);
     uint currentPrice = price - (discountPerSecond * difTime);
+
     return currentPrice;
   }
   

@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./ohMyMinter.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract ConfigureLogic is Ownable{  
   IERC20 public currency;
-  IERC721 public token;
+  ohMyMinter public token;
   uint public basePrice;
-  uint public initialPrice;
-  uint public minimalPrice = 1 ether; // 1 usd convertirlo en funcion en porcentual 75% de caida;
-  uint public auctionInitialDuration;
+  uint public initialPrice; //set every buy
+  uint public minimalPrice; // set with every buy;
   uint public auctionMaxDuration= 20 days;
   uint public auctionsStartDate;
 
-  mapping(uint256 => uint256) public priceOfBuy;
+  mapping(uint256 => uint256) public priceOfBuy; //nftID => bought price
+  mapping(uint256 => uint256) public priceOfSell; //nftID => sold price
 
-  constructor(IERC20 _currency, IERC721 _token) {
+  constructor(IERC20 _currency,ohMyMinter _token) {
     currency = _currency;
     token = _token;
   }
@@ -28,17 +28,15 @@ abstract contract ConfigureLogic is Ownable{
 
   function setInitialPrice(uint _initialPrice) public onlyOwner{
     initialPrice = _initialPrice;
+    minimalPrice = _initialPrice * 25 / 100;
   }
 
-  function setAuctionInitialDuration(uint _auctionInitialDuration) public onlyOwner{
-    auctionInitialDuration = _auctionInitialDuration;
-  }
 
   function setCurrency(IERC20 _currency) public onlyOwner{
     currency = _currency;
   }
   
-  function setToken(IERC721 _token) public onlyOwner{
+  function setToken(ohMyMinter _token) public onlyOwner{
     token = _token;
   }
 
