@@ -11,13 +11,13 @@ contract GameLogic is ConfigureLogic {
     uint256 profits;
     bool isprofit;
   }
-  uint totalGarbage;
+  uint public totalGarbage;
 
   constructor (IERC20 _currency,ohMyMinter _tokenNFT) ConfigureLogic(_currency, _tokenNFT) {
     auctionCount = _tokenNFT.totalSupply();
   }
 
-  function setAndStart(uint _initialPrice) public {
+  function setAndStart(uint _initialPrice) public onlyOwner{
     setInitialPrice(_initialPrice);
     setBasePrice(_initialPrice);    
     startAuction();
@@ -36,7 +36,7 @@ contract GameLogic is ConfigureLogic {
 
   function redeemAndBurn(uint _id) public returns(bool){
     require(token.ownerOf(_id) == msg.sender, "You are not the owner of this token");
-    require(checkSell(_id), "You can't sell this token");    
+    require(checkMaySell(_id), "You can't sell this token");    
     uint toPay = priceOfBuy[_id+1];  //+1 because need the next sell price
 
     priceOfSell[_id] = toPay;
@@ -76,7 +76,7 @@ contract GameLogic is ConfigureLogic {
     return profitResults;
   }
 
-  function checkSell(uint _id)public view returns(bool){
+  function checkMaySell(uint _id)public view returns(bool){
     return priceOfBuy[_id+1]>0;
   }
 
